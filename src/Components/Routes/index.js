@@ -1,12 +1,30 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import Home from '../../Pages/Home';
+import { Home } from '../../Pages/Home';
 import MeuPlano from '../../Pages/MeuPlano';
 import Profissionais from '../../Pages/Profissionais';
+import Agendar from '../../Pages/Agendar';
+
 import Colors from '../Colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+function StackNativagion(){
+    return(
+        <Stack.Navigator
+            name="Tabs"
+            component={Routes}
+            Screenoptions={{
+                headerShown: false
+            }}>
+            <Stack.Screen name="Agendar" component={Agendar}/>
+        </Stack.Navigator>
+    )
+}
+
 
 function Routes() {
   return (

@@ -1,6 +1,46 @@
-import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet, Image, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import UserServices from '../../Components/UserServices';
+import Colors from '../../Components/Colors';
 
-export default function Login() {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+export default function Login({onLogin}) {
+
+    const [usuario, setUsuario] = useState('');
+    const [password, setPassword] = useState('');
+
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmitLogin = async () =>{
+        const login = {
+            usuario: usuario,
+            password: password
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await UserServices.Login(login);
+
+            
+            if (response) {
+
+                onLogin(response);
+
+            } else {
+                alert("Verifique suas credenciais.");
+            }
+            
+        } catch (error) {
+            alert("Algo deu Errado: " + error)
+        } finally {
+            setLoading(false)
+        }
+
+    }
+
  return (
    <View style={styles.container}>
         <View style={styles.content1}>
@@ -10,11 +50,12 @@ export default function Login() {
 
         <View style={styles.content2}>
             <Text>Digite seu usuário:</Text>
-            <TextInput style={styles.input}/>
+            <TextInput style={styles.input} value={usuario} onChangeText={setUsuario} />
             <Text>Digite sua senha:</Text>
-            <TextInput style={styles.input}/>
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.textButton}>Entrar</Text>
+            <TextInput style={styles.input} value={password} onChangeText={setPassword}/>
+            <TouchableOpacity style={styles.button} onPress={handleSubmitLogin}>
+                {loading? <ActivityIndicator size={24} color={Colors.azulClaro}/> : 
+                <Text style={styles.textButton}>Entrar</Text> }
             </TouchableOpacity>
 
             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
@@ -34,7 +75,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5F5F5",
     },
     imageLogo:{
-        width: '90%',
+        width: '80%',
+        height: '80%',
     },
     text:{
         color: "#0288D1",
@@ -45,11 +87,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10,
         marginHorizontal: 15,
-        flex:1,
+        height: '50%',
         justifyContent: 'center',
     },
     content2:{
-        flex:1,
+        height: '50%',
         marginHorizontal: 15,
         gap: 10,
     },

@@ -1,9 +1,26 @@
 import { View, StyleSheet, Text, Image, ScrollView, TouchableOpacity, FlatList} from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Colors from '../../Components/Colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import Skeleton from './skeleton-home';
 
 
-export default function Home() {
+export function Home({ navigation }) {
+
+    const [ usuario, setUsuario ] = useState(null);
+    const [ loading, setLoading ] = useState(true);
+    
+    useEffect(() => {
+        handleUsuario()
+        console.log(usuario)
+        if(usuario != null){
+            setLoading(false)
+        }
+    }, [usuario]);
+
+
 
     const renderConsultas = [
         {
@@ -25,23 +42,38 @@ export default function Home() {
         Data: "12/01/2025 ás 14:00"
         }
 ]
+
+
+
+    const handleUsuario = async () => {  
+        try {
+            const usuario = await AsyncStorage.getItem('usuario');
+            setUsuario(usuario)
+            
+        } catch (error) {
+            console.log(error)
+        }
+    }
  
 
  return (
     <View style={styles.container}>
-        
 
+        {loading ? 
+        ( <Skeleton/>)
+        :(
             <View style={styles.header}>
-                <Text style={styles.textHeader}>Olá, Raphael!</Text>
+                <Text style={styles.textHeader}>Olá, {usuario}!</Text>
                 <Image source={require("./../../Image/logo.png")} style={styles.imageHeader} />
             </View>
+        )}
 
             <View style={styles.content}>
                 <Text style={{fontWeight: '900', marginVertical: 8}}>Acesso Rápido</Text>
                 <View>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                         
-                        <TouchableOpacity style={{height: 120, width: 120, alignItems: 'center', justifyContent: 'center', gap: 5}}>
+                        <TouchableOpacity onPress={()=> navigation.navigate('Agendar')} style={{height: 120, width: 120, alignItems: 'center', justifyContent: 'center', gap: 5}}>
                             <View style={styles.buttonMenu}>
                                 <Icon name='calendar-plus' size={36} color={Colors.branco}/>
                             </View>
