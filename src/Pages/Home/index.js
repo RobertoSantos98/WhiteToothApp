@@ -5,50 +5,49 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Skeleton from './skeleton-home';
+import ConsultasServices from '../../Components/UserServices/ConsultaServices'
+import ConsultasSkeleton from './skeleton-consultas';
 
 
 export function Home({ navigation }) {
 
     const [ usuario, setUsuario ] = useState(null);
+    const [ consultas, setConsultas ] = useState(null);
+    const [ idusuario, setIdUsuario ] = useState(null);
+
     const [ loading, setLoading ] = useState(true);
+    const [ loadingConsultas, setLoadingConsultas ] = useState(true)
     
     useEffect(() => {
         handleUsuario()
-        console.log(usuario)
-        if(usuario != null){
+        
+        if(usuario != null && idusuario != null){
+            renderConsultas()
+
             setLoading(false)
+            setLoadingConsultas(false)
         }
     }, [usuario]);
 
+    const renderConsultas = async () => {
+        
+        const response = await ConsultasServices.ConsultaPorPaciente(idusuario);
 
-
-    const renderConsultas = [
-        {
-        id: 1,
-        Medico: "Dr. Vanderlei",
-        Motivo: "Retirada do Ciso",
-        Data: "12/01/2025 ás 14:00"
-        },
-        {
-        id: 2,
-        Medico: "Dr. Mauricio",
-        Motivo: "Branqueamento",
-        Data: "12/01/2025 ás 14:00"
-        },
-        {
-        id: 3,
-        Medico: "Dr. Fernandes",
-        Motivo: "Canal",
-        Data: "12/01/2025 ás 14:00"
+        if (response) {
+            setConsultas(response)
+        } else {
+            alert("Não foi possível recuperar consultas.")
         }
-]
 
+    }
 
 
     const handleUsuario = async () => {  
         try {
             const usuario = await AsyncStorage.getItem('usuario');
+            const idusuario = parseInt(await AsyncStorage.getItem('idusuario'), 10);
             setUsuario(usuario)
+            setIdUsuario(idusuario)
             
         } catch (error) {
             console.log(error)
@@ -69,6 +68,12 @@ export function Home({ navigation }) {
         )}
 
             <View style={styles.content}>
+
+                <View>
+                    <Image source={require('../../Image/banner-1.jpg')} style={{width: '100%', borderRadius: 18, elevation: 8, marginTop: 15}}/>
+                </View>
+
+
                 <Text style={{fontWeight: '900', marginVertical: 8}}>Acesso Rápido</Text>
                 <View>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -106,22 +111,28 @@ export function Home({ navigation }) {
                 <View>
                     <Text style={{fontWeight: '900'}}>Consulta Agendadas </Text>
                     <View>
-                        <FlatList 
-                            data={renderConsultas}
-                            key={(item)=> item.id}
-                            renderItem={({item}) => (
-                                <TouchableOpacity style={styles.consultasList}>
-                                    <View style={{width: 70}}>
-                                        <Icon name='account-circle' color={Colors.azulClaro} size={70}/>
-                                    </View>
-                                    <View style={{justifyContent:'space-around', marginHorizontal: 15, height: 70, width: '100%'}}>
-                                        <Text style={{fontWeight: '900', fontSize: 16}}>{item.Medico}</Text>
-                                        <Text>{item.Motivo}</Text>
-                                        <Text>{item.Data}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                            />
+                        {loadingConsultas ? 
+                            <ConsultasSkeleton />
+                        : (
+                            <FlatList 
+                                data={consultas}
+                                key={(item)=> item.id}
+                                renderItem={({item}) => (
+                                    <TouchableOpacity style={styles.consultasList}>
+                                        <View style={{width: 70}}>
+                                            <Icon name='account-circle' color={Colors.azulClaro} size={70}/>
+                                        </View>
+                                        <View style={{justifyContent:'space-around', marginHorizontal: 15, height: 70, width: '100%'}}>
+                                            <Text style={{fontWeight: '900', fontSize: 16}}>{item.medico}</Text>
+                                            <Text>{item.motivo}</Text>
+                                            <Text>{item.data}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+                                />
+
+                        )
+                        }
                     </View>
 
                 </View>
@@ -178,7 +189,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginTop: 8
+        marginTop: 8,
+        
     }
 
 })

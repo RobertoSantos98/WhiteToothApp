@@ -22,7 +22,7 @@ export default function App() {
         console.log(userData);
         await AsyncStorage.setItem('usuario', userData.usuario);
         await AsyncStorage.setItem('token', userData.token);
-
+        await AsyncStorage.setItem('idusuario', JSON.stringify(userData.idusuario));
       }
 
 

@@ -17,7 +17,8 @@ const Login = async (login) => {
         
         const dados = {
             token : response.data.mensagem,
-            usuario : response.data.dados.login
+            usuario : response.data.dados.login,
+            idusuario: response.data.dados.idusuario
         };
         
         return dados;
