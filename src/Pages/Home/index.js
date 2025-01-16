@@ -7,31 +7,41 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Skeleton from './skeleton-home';
 import ConsultasServices from '../../Components/UserServices/ConsultaServices'
 import ConsultasSkeleton from './skeleton-consultas';
+import { useNavigation } from '@react-navigation/native';
 
 
-export function Home({ navigation }) {
+export function Home() {
 
     const [ usuario, setUsuario ] = useState(null);
     const [ consultas, setConsultas ] = useState(null);
     const [ idusuario, setIdUsuario ] = useState(null);
+    const [ token, setToken ] = useState(null);
 
     const [ loading, setLoading ] = useState(true);
     const [ loadingConsultas, setLoadingConsultas ] = useState(true)
     
+    const navigation = useNavigation();
+    
     useEffect(() => {
         handleUsuario()
         
-        if(usuario != null && idusuario != null){
-            renderConsultas()
+        const timeout = setTimeout(() => {
+            if(usuario != null && idusuario != null){
+                renderConsultas()
+    
+                setLoading(false)
+                setLoadingConsultas(false)
+            }
 
-            setLoading(false)
-            setLoadingConsultas(false)
-        }
+        }, 3000);
+
+        return () => clearTimeout(timeout)
+        
     }, [usuario]);
 
     const renderConsultas = async () => {
         
-        const response = await ConsultasServices.ConsultaPorPaciente(idusuario);
+        const response = await ConsultasServices.ConsultaPorPaciente(idusuario, token);
 
         if (response) {
             setConsultas(response)
@@ -45,9 +55,11 @@ export function Home({ navigation }) {
     const handleUsuario = async () => {  
         try {
             const usuario = await AsyncStorage.getItem('usuario');
+            const token = await AsyncStorage.getItem('token');
             const idusuario = parseInt(await AsyncStorage.getItem('idusuario'), 10);
             setUsuario(usuario)
             setIdUsuario(idusuario)
+            setToken(token)
             
         } catch (error) {
             console.log(error)

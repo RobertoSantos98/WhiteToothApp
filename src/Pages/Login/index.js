@@ -52,7 +52,7 @@ export default function Login({onLogin}) {
             <Text>Digite seu usuário:</Text>
             <TextInput style={styles.input} value={usuario} onChangeText={setUsuario} />
             <Text>Digite sua senha:</Text>
-            <TextInput style={styles.input} value={password} onChangeText={setPassword}/>
+            <TextInput secureTextEntry style={styles.input} value={password} onChangeText={setPassword}/>
             <TouchableOpacity style={styles.button} onPress={handleSubmitLogin}>
                 {loading? <ActivityIndicator size={24} color={Colors.azulClaro}/> : 
                 <Text style={styles.textButton}>Entrar</Text> }

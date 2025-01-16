@@ -12,18 +12,18 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-function StackNativagion(){
-    return(
-        <Stack.Navigator
-            name="Tabs"
-            component={Routes}
-            Screenoptions={{
-                headerShown: false
-            }}>
-            <Stack.Screen name="Agendar" component={Agendar}/>
-        </Stack.Navigator>
-    )
-}
+function StackNavigation() {
+    return (
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Tabs" component={Routes} />
+        <Stack.Screen name="Agendar" component={Agendar} />
+      </Stack.Navigator>
+    );
+  }
 
 
 function Routes() {
@@ -89,4 +89,4 @@ function Routes() {
   );
 }
 
-export default Routes;
+export default StackNavigation;

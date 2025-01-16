@@ -1,10 +1,12 @@
 import Login from './src/Pages/Login';
 import { StatusBar } from 'react-native';
 import Colors from './src/Components/Colors';
-import Routes from './src/Components/Routes';
 import { NavigationContainer } from '@react-navigation/native';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import StackNavigation from './src/Components/Routes';
+import Routes from './src/Components/Routes';
 
 
 
@@ -40,7 +42,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar backgroundColor={Colors.azulPrincipal}/>
-      {logado ? <Routes/> : <Login onLogin={handleLogin}/>} 
+      {logado ? <StackNavigation/> : <Login onLogin={handleLogin}/>} 
     </NavigationContainer>
   );
 } 
