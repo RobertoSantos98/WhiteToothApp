@@ -1,5 +1,5 @@
 import { View, StyleSheet, Text, Image, ScrollView, TouchableOpacity, FlatList} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Colors from '../../Components/Colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,7 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Skeleton from './skeleton-home';
 import ConsultasServices from '../../Components/UserServices/ConsultaServices'
 import ConsultasSkeleton from './skeleton-consultas';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+
 
 
 export function Home() {
@@ -21,6 +22,7 @@ export function Home() {
     const [ loadingConsultas, setLoadingConsultas ] = useState(true)
     
     const navigation = useNavigation();
+
     
     useEffect(() => {
         handleUsuario()
@@ -43,13 +45,19 @@ export function Home() {
         
         const response = await ConsultasServices.ConsultaPorPaciente(idusuario, token);
 
-        if (response) {
+        if (response && response.length > 0) {
             setConsultas(response)
         } else {
-            alert("Não foi possível recuperar consultas.")
+            console.log("Não foi possível recuperar consultas.")
         }
 
     }
+
+    useFocusEffect(
+        useCallback(() => {
+          renderConsultas(); // Chama a função para obter as consultas sempre que a tela for focada
+        }, []) // Dependência vazia para chamar uma vez ao focar
+    );
 
 
     const handleUsuario = async () => {  
